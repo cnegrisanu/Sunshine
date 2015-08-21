@@ -1,5 +1,8 @@
 package com.example.android.sunshine;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PreferenceManager.setDefaultValues(this,R.xml.pref_general,false);
     }
 
 
@@ -30,7 +34,18 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this,SettingsActivity.class));
             return true;
+        } else if (id == R.id.action_show_on_map){
+            Intent viewOnMap = new Intent();
+            viewOnMap.setAction(Intent.ACTION_VIEW);
+//            viewOnMap.setData(Uri.parse("geo:37.386051,-122.083847"));
+            viewOnMap.setData(Uri.parse("geo:0,0?q="+PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default))));
+
+            // Verify that the intent will resolve to an activity
+            if (viewOnMap.resolveActivity(getPackageManager()) != null) {
+                startActivity(viewOnMap);
+            }
         }
 
         return super.onOptionsItemSelected(item);

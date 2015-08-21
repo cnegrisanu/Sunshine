@@ -19,15 +19,17 @@ package com.example.android.sunshine;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
-
-import com.example.android.sunshine.R;
 
 public class DetailActivity extends ActionBarActivity {
 
@@ -38,7 +40,7 @@ public class DetailActivity extends ActionBarActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new DetailFragment())
                     .commit();
         }
     }
@@ -60,6 +62,7 @@ public class DetailActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this,SettingsActivity.class));
             return true;
         }
 
@@ -69,9 +72,47 @@ public class DetailActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class DetailFragment extends Fragment {
 
-        public PlaceholderFragment() {
+        private static final String LOG_TAG = DetailFragment.class.getSimpleName();
+
+        private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
+        private String mForecastStr;
+
+
+        /**
+         * Initialize the contents of the Activity's standard options menu.  You
+         * should place your menu items in to <var>menu</var>.  For this method
+         * to be called, you must have first called {@link #setHasOptionsMenu}.  See
+         * {@link Activity#onCreateOptionsMenu(Menu) Activity.onCreateOptionsMenu}
+         * for more information.
+         *
+         * @param menu     The options menu in which you place your items.
+         * @param inflater
+         * @see #setHasOptionsMenu
+         * @see #onPrepareOptionsMenu
+         * @see #onOptionsItemSelected
+         */
+        @Override
+        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+            inflater.inflate(R.menu.detailfragment, menu);
+
+
+            MenuItem menuItem = menu.findItem(R.id.action_share);
+
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d(LOG_TAG,"Share action provider is null?");
+            }
+
+        }
+
+        public DetailFragment() {
+            setHasOptionsMenu(true);
         }
 
         @Override
@@ -83,12 +124,20 @@ public class DetailActivity extends ActionBarActivity {
             TextView weather = (TextView) rootView.findViewById(R.id.weather_text);
 
             if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-                String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-                weather.setText(forecast);
+                mForecastStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+                weather.setText(mForecastStr);
             }
 
 
             return rootView;
+        }
+
+        private Intent createShareForecastIntent() {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT,mForecastStr + FORECAST_SHARE_HASHTAG);
+            return shareIntent;
         }
     }
 }
