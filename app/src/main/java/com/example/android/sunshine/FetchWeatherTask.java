@@ -18,6 +18,7 @@ package com.example.android.sunshine;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -26,6 +27,8 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.example.android.sunshine.data.WeatherContract.WeatherEntry;
+import com.example.android.sunshine.data.WeatherDbHelper;
+import com.example.android.sunshine.data.WeatherProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,6 +111,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
         // Students: First, check if the location with this city name exists in the db
         // If it exists, return the current ID
+
+        int location_id;
+        WeatherProvider content = new WeatherProvider();
+        location_id = content.query()
         // Otherwise, insert it using the content resolver and the base URI
         return -1;
     }
