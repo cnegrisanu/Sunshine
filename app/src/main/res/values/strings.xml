@@ -24,6 +24,7 @@
 
     <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
     <string name="pref_temperature_units_default" translatable="false">Metric</string>
+    <string name="pref_temperature_units_imperial" translatable="false">Imperial</string>
 
     <string-array name="temperature_units">
         <item>Metric</item>
